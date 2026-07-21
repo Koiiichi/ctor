@@ -22,7 +22,7 @@ class Player {
     bool buildResidence(int vertex);
     bool improveResidence(int vertex);
     bool buildRoad(int edge);
-    trade(Player& other, Material give, int giveAmount, Material take, int takeAmount);
+    trade(Player& other, Material give, Material take);
     int rollDice();
     void setDice(unique_ptr<Dice>);
     int loseHalfToGeese();
