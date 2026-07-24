@@ -7,8 +7,10 @@ import player;
 export class Edge {
   Vertice* v1;
   Vertice* v2;
-  Player* road;
+  Player* road = nullptr;
+  int num;
   public: 
+    Edge(Vertice* v1, Vertice* v2, int number);
     bool build(Player* owner);
-    string display();
+    std::string display();
 };
