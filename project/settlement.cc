@@ -5,6 +5,8 @@ import residenceLevel;
 import material;
 import colour;
 
+export class Player;
+
 export class Settlement {
   ResidenceLevel level = ResidenceLevel::Basement;
   Player* player;

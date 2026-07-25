@@ -9,7 +9,9 @@ import dice;
 import material;
 import settlement;
 
-class Player {
+export class Map;
+
+export class Player {
   int numBricks = 0;
   int numEnergy = 0;
   int numGlass = 0;

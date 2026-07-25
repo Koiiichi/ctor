@@ -1,1 +1,14 @@
-
+colour.cc
+residenceLevel.cc
+material.cc
+tileInfo.cc
+tile.cc
+boardSource.cc
+dice.cc
+subj_obj.cc
+settlement.cc
+player.cc
+vertice.cc
+edge.cc
+map.cc
+main.cc
