@@ -2,8 +2,30 @@ module board;
 
 import<iostream>;
 import<vector>;
+import<random>;
 
 using namespace std;
+
+static mt19937 &playerRng() {
+  static mt19937 engine{static_cast<unsigned>(Dice::seed)};
+  return engine;
+}
+
+static Material pickWeighted(const vector<int> &counts) {
+  int total = counts[0] + counts[1] + counts[2] + counts[3] + counts[4];
+  uniform_int_distribution<int> dist{0, total - 1};
+  int r = dist(playerRng());
+  const Material order[] = {Material::Brick, Material::Energy, Material::Glass,
+                            Material::Heat, Material::Wifi};
+  for (int i = 0; i < 5; ++i) {
+    if (r < counts[i]) {
+      return order[i];
+    }
+    r -= counts[i];
+  }
+  return Material::Wifi;
+}
+
 Player::Player(Colour colour, unique_ptr<Dice> dice, Map& map):
   colour{colour}, dice{std::move(dice)}, map{map} {}
 
@@ -91,17 +113,24 @@ void Player::setDice(unique_ptr<Dice> newDice) {
 
 int Player::loseHalfToGeese() {
   int sum = numBricks + numEnergy + numGlass + numHeat + numWifi;
+  if(sum < 10) {
+    return 0;
+  }
   int halfTotal = sum / 2;
-  if(sum >= 10) {
-
-    // TODO: randomly remove half (rounded down) resources
+  for(int i = 0; i < halfTotal; ++i) {
+    reduce(pickWeighted(giveMaterialAmount()), 1);
   }
   return halfTotal;
 }
 
 void Player::stealFrom(Player& victim) {
-  // TODO: randomly choose a resource to steal, then 
-  return;
+  vector<int> counts = victim.giveMaterialAmount();
+  if(counts[0] + counts[1] + counts[2] + counts[3] + counts[4] == 0) {
+    return;
+  }
+  Material stolen = pickWeighted(counts);
+  victim.reduce(stolen, 1);
+  increase(stolen, 1);
 }
 
 // reduce is only called within a check-then-act function
