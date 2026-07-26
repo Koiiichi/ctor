@@ -1,21 +1,27 @@
-export module tile;
+export module board:tile;
 
-import <utility>;
+import <vector>;
 import material;
-import edge;
-import vertice;
 import tileInfo;
+import subj_obs;
+import :edge;
+import :vertice;
 
-class Tile {
+export class Tile: public Observer {
   Material mat;
   int value;
-  bool hasGeese;
-  std::vector<Edge*> edges;
-  std::vector<Vertice*> vertices;
+  bool hasGeese = false;
+  std::vector<Edge *> edges;
+  std::vector<Vertice *> vertices;
 
   public:
-    void update(int rollValue);
-    TileInfo display();
+    Tile(Material mat, int value);
+    void update(int rollValue) override;
+    TileInfo display() const;
+    void addEdge(Edge *e);
+    void addVertice(Vertice *v);
+    const std::vector<Edge *> &getEdges() const;
+    const std::vector<Vertice *> &getVertices() const;
+    void setGeese(bool present);
+    bool getGeese() const;
 };
-
-

@@ -1,59 +1,54 @@
-module settlement;
+module board;
 
-// vertice is responsible for checking legality of improve
-void Settlement::improve() {
-  if(level == ResidenceLevel::Basement) {
+import <string>;
+
+using namespace std;
+
+Settlement::Settlement(Player *player): player{player} {}
+
+void Settlement::give(Material mat) {
+  player->increase(mat, buildingPoints());
+}
+
+bool Settlement::improve() {
+  if (level == ResidenceLevel::Basement) {
     level = ResidenceLevel::House;
+    return true;
   }
-  else {
-    // since vertice is responsible for checking, we can assume the only thing left this
+  if (level == ResidenceLevel::House) {
     level = ResidenceLevel::Tower;
+    return true;
   }
+  return false;
 }
 
-int Settlement::buildingPoints() {
-  if(level == ResidenceLevel::Basement) {
+int Settlement::buildingPoints() const {
+  if (level == ResidenceLevel::Basement) {
     return 1;
   }
-  else if (level == ResidenceLevel::House) {
+  if (level == ResidenceLevel::House) {
     return 2;
   }
-  // last case is tower
   return 3;
 }
 
-// actually identical to building points, returns the mult for resource generation
-int Settlement::giveMat() {
-  if(level == ResidenceLevel::Basement) {
-    return 1;
-  }
-  else if (level == ResidenceLevel::House) {
-    return 2;
-  }
-  // last case is tower
-  return 3;
-}
-ResidenceLevel Settlement::getLevel() {
+ResidenceLevel Settlement::getLevel() const {
   return level;
 }
 
-string display() {
-  string rVal = "";
-  rVal += player->getColour();
-  if(level == ResidenceLevel::Basement) {
-    rVal += 'B';
-  }
-  else if (level == ResidenceLevel::House) {
-    rVal += 'H';
-  }
-  else {
-    rVal += 'T';
-  }
-  return rVal;
- 
-}
-
-Player* belongsTo() {
+Player *Settlement::getOwner() const {
   return player;
 }
 
+string Settlement::display() const {
+  string rVal;
+  rVal += player->getColour();
+  if (level == ResidenceLevel::Basement) {
+    rVal += 'B';
+  } else if (level == ResidenceLevel::House) {
+    rVal += 'H';
+  } else {
+    rVal += 'T';
+  }
+  return rVal;
+}

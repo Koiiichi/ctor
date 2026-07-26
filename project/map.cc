@@ -1,28 +1,29 @@
-export module map;
+export module board:map;
 
-import <utility>;
 import <string>;
-import tile;
-import edge;
-import vertice;
-import player;
+import <vector>;
+import boardSource;
 import subj_obs;
+import :edge;
+import :tile;
+import :vertice;
 
 export class Map: public Subject {
   std::vector<Tile> tiles;
   std::vector<Edge> edges;
   std::vector<Vertice> vertices;
-  Tile* geesed;
-  std::Vector<Player*> players;
+  Tile *goosed = nullptr;
   public:
-    Map(std::vector<Tile> tiles, std::vector<Edge> edges, 
-      std::vector<Vertice> vertices, std::vector<Player*> players);
+    Map(BoardSource &source);
     void placeGoose(int tileIndex);
-    bool canBuildRoad(int edge, Player* p);
-    bool canBuildResidence(int vertex, Player* p);
-    vector<Player*> buildersOnTile(int tileIndex);
-    string display();
-    Vertice getVertice(int index);
-    Edge getEdge(int index);
-    Player* getPlayer(Colour colour);
+    bool canBuildRoad(int edge, Player *p);
+    bool canBuildResidence(int vertex, Player *p);
+    std::vector<Player *> buildersOnTile(int tileIndex) const;
+    std::string display() const;
+    Vertice &getVertice(int index);
+    Edge &getEdge(int index);
+    Tile &getTile(int index);
+    int numTiles() const;
+    int numEdges() const;
+    int numVertices() const;
 };
