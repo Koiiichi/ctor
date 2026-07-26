@@ -1,4 +1,4 @@
-export module player;
+export module board:player;
 
 import <memory>;
 import <utility>;
@@ -7,9 +7,8 @@ import <vector>;
 import colour;
 import dice;
 import material;
-import settlement;
-
-class Map;
+import :map;
+import :settlement;
 
 export class Player {
   int numBricks = 0;
@@ -34,6 +33,7 @@ export class Player {
     int loseHalfToGeese();
     void stealFrom(Player& victim);
     void reduce(Material material, int amount);
+    void increase(Material material, int amount);
     char getColour();
 
     std::vector<int> giveMaterialAmount();

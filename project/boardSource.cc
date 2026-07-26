@@ -1,19 +1,26 @@
 export module boardSource;
-import <utility>;
+
+import <string>;
 import <vector>;
+import material;
 import tileInfo;
 
-class BoardSource {
+export class BoardSource {
   public:
-   virtual std::vector<TileInfo> getTiles() ;
+    virtual std::vector<TileInfo> getTiles() = 0;
+    virtual ~BoardSource() = default;
 };
 
-class RandomBoardSource: public BoardSource {
+export class RandomBoardSource: public BoardSource {
+  unsigned seed;
   public:
+    RandomBoardSource(unsigned seed);
     std::vector<TileInfo> getTiles() override;
 };
 
-class FileBoardSource: public BoardSource {
+export class FileBoardSource: public BoardSource {
+  std::string file;
   public:
+    FileBoardSource(const std::string &file);
     std::vector<TileInfo> getTiles() override;
 };

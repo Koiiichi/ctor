@@ -1,25 +1,25 @@
-export module vertice;
+export module board:vertice;
 
 import <memory>;
-import <utility>;
 import <string>;
 import <vector>;
 import material;
-import player;
-import settlement;
+import :settlement;
 
-class Edge;
+export class Edge;
 
 export class Vertice {
   int number;
   std::unique_ptr<Settlement> house = nullptr;
-  std::vector<Edge*> edges;
+  std::vector<Edge *> edges;
   public:
-    Vertice(int num, std::vector<Edge*> edges);
-    bool buildSettlement(Player* owner);
-    bool improve(Player* owner);
+    Vertice(int number);
+    bool buildSettlement(Player *owner);
+    bool improve(Player *owner);
     void giveMat(Material mat);
-    void setSettlement(std::unique_ptr<Settlement> newHouse);
-    std::string display();
+    std::string display() const;
+    void addEdge(Edge *e);
+    const std::vector<Edge *> &getEdges() const;
+    Settlement *getSettlement() const;
+    int getNumber() const;
 };
-

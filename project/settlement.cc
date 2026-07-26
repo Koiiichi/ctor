@@ -1,20 +1,20 @@
-export module settlement;
+export module board:settlement;
 
 import <string>;
 import residenceLevel;
 import material;
-import colour;
 
 class Player;
 
 export class Settlement {
   ResidenceLevel level = ResidenceLevel::Basement;
-  Player* player;
+  Player *player;
   public:
-    void improve();
-    int buildingPoints();
-    int giveMat();
-    ResidenceLevel getLevel();
-    std::string display();
-    Player* belongsTo();
+    Settlement(Player *player);
+    void give(Material mat);
+    bool improve();
+    int buildingPoints() const;
+    ResidenceLevel getLevel() const;
+    Player *getOwner() const;
+    std::string display() const;
 };
