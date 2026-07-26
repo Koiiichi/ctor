@@ -20,13 +20,13 @@ export class Player {
   Colour colour;
   std::unique_ptr<Dice> dice;
   Map& map;
-  std::vector<Settlement> settlements;
+  std::vector<Settlement *> settlements;
   public:
     Player(Colour colour, std::unique_ptr<Dice> dice, Map& map);
     bool buildResidence(int vertex);
     bool improveResidence(int vertex);
     bool buildRoad(int edge);
-    bool trade(Material give, Material take);
+    bool trade(Material give, Material take, Player *other);
     int rollDice();
     void setDice(std::unique_ptr<Dice> newDice);
     int loseHalfToGeese();

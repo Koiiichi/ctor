@@ -1,12 +1,9 @@
 export module board:map;
 
-import <utility>;
-import <vector>;
 import <string>;
 import <vector>;
 import boardSource;
 import subj_obs;
-import colour;
 import :edge;
 import :tile;
 import :vertice;

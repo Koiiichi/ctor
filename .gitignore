@@ -1,0 +1,4 @@
+*.o
+gcm.cache/
+project/constructor
+a.out

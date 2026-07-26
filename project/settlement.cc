@@ -4,7 +4,7 @@ import <string>;
 import residenceLevel;
 import material;
 
-class Player;
+export class Player;
 
 export class Settlement {
   ResidenceLevel level = ResidenceLevel::Basement;

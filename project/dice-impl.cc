@@ -4,11 +4,6 @@ import <iostream>;
 import <string>;
 
 using namespace std;
-Dice::Dice(): {
-  seed = chrono::system_clock::now().time_since_epoch().count();
-  rng{seed};
-}
-
 int LoadedDice::roll() {
   cout << "enter a number between 2 and 12: " ;
   string input;
@@ -24,5 +19,5 @@ int LoadedDice::roll() {
 }
 
 int FairDice::roll() {
-  return (rng() % 10) + 1;
+  return (rng() % 6) + (rng() % 6) + 2;
 }

@@ -1,27 +1,26 @@
 module board;
 
 import<iostream>;
+import<vector>;
 
 using namespace std;
 Player::Player(Colour colour, unique_ptr<Dice> dice, Map& map):
-  colour{colour}, dice{dice}, map{map} {}
+  colour{colour}, dice{std::move(dice)}, map{map} {}
 
 bool Player::buildResidence(int vertex) {
   bool result = map.getVertice(vertex).buildSettlement(this);
   if(result) {
-    Settlement temp = Settlement();
-    map.getVertice(vertex).setSettlement(make_unique<temp>());
-    settlements.add(temp)
+    settlements.emplace_back(map.getVertice(vertex).getSettlement());
   }
   return result;
 }
 
 bool Player::improveResidence(int vertex) {
-  return map.getVertice(vertex).improveSettlement(this);
+  return map.getVertice(vertex).improve(this);
 }
 
 bool Player::buildRoad(int edge) {
-  return map.getVertice(edge).build(this);
+  return map.getEdge(edge).build(this);
 }
 
 bool Player::trade(Material give, Material take, Player* other) {
@@ -59,39 +58,38 @@ bool Player::trade(Material give, Material take, Player* other) {
     }
     if (take == Material::Brick) {
       numBricks++;
-      other->decrease(Material::Brick, 1);
+      other->reduce(Material::Brick, 1);
     }
     else if (take == Material::Energy) {
       numEnergy++;
-      other->decrease(Material::Energy, 1);
+      other->reduce(Material::Energy, 1);
     }
     else if (take == Material::Glass) {
       numGlass++;
-      other->decrease(Material::Glass, 1);
+      other->reduce(Material::Glass, 1);
     }
     else if (take == Material::Heat) {
       numHeat++;
-      other->decrease(Material::Heat, 1);
+      other->reduce(Material::Heat, 1);
     } 
     else if (take == Material::Wifi) {
       numWifi++;
-      other->decrease(Material::Wifi, 1);
+      other->reduce(Material::Wifi, 1);
     }
+    return true;
   }
-  
-
-  
+  return false;
 }
 
 int Player::rollDice() {
-  dice.roll();
+  return dice->roll();
 }
 
 void Player::setDice(unique_ptr<Dice> newDice) {
-  dice = newDice;
+  dice = std::move(newDice);
 }
 
-int Player::lostHalfToGeese() {
+int Player::loseHalfToGeese() {
   int sum = numBricks + numEnergy + numGlass + numHeat + numWifi;
   int halfTotal = sum / 2;
   if(sum >= 10) {
