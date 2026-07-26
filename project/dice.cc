@@ -8,18 +8,20 @@ export class Dice {
   std::default_random_engine rng;
   public:
     int roll() const;
-    static unsigned seed = 0;
-    static setSeed(int newSeed) {
+    static int seed;
+    static void setSeed(int newSeed) {
       seed = newSeed;
-    };
+    }
     Dice();
 };
 
+int Dice::seed = 0;
+
 export class LoadedDice: public Dice {
-  int roll() const override;
+  int roll() const;
 };
 
 export class FairDice: public Dice {
   public:
-    int roll() const override;
+    int roll() const;
 };

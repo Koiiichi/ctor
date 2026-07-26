@@ -1,5 +1,6 @@
 export module boardSource;
 import <utility>;
+import <vector>;
 import tileInfo;
 
 class BoardSource {

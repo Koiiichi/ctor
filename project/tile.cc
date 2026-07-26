@@ -1,12 +1,14 @@
 export module tile;
 
 import <utility>;
+import <vector>;
 import material;
-import edge;
-import vertice;
 import tileInfo;
 
-class Tile {
+class Edge;
+class Vertice;
+
+export class Tile {
   Material mat;
   int value;
   bool hasGeese;

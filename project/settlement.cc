@@ -5,7 +5,7 @@ import residenceLevel;
 import material;
 import colour;
 
-export class Player;
+class Player;
 
 export class Settlement {
   ResidenceLevel level = ResidenceLevel::Basement;
@@ -15,6 +15,6 @@ export class Settlement {
     int buildingPoints();
     int giveMat();
     ResidenceLevel getLevel();
-    string display();
+    std::string display();
     Player* belongsTo();
 };

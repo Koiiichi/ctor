@@ -2,14 +2,14 @@ export module player;
 
 import <memory>;
 import <utility>;
+import <vector>;
 
-import map;
 import colour;
 import dice;
 import material;
 import settlement;
 
-export class Map;
+class Map;
 
 export class Player {
   int numBricks = 0;
@@ -30,7 +30,7 @@ export class Player {
     // this simluates a one-sided trade, interface will call on the other side when interpreting the commands
     void trade(Material give, Material take);
     int rollDice();
-    void setDice(unique_ptr<Dice>);
+    void setDice(std::unique_ptr<Dice> newDice);
     int loseHalfToGeese();
     void stealFrom(Player& victim);
     void reduce(Material material, int amount);
