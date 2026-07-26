@@ -15,6 +15,7 @@ export class Dice {
     Dice();
 };
 
+// give it a default value
 int Dice::seed = 0;
 
 export class LoadedDice: public Dice {

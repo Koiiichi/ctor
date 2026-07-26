@@ -24,38 +24,63 @@ bool Player::buildRoad(int edge) {
   return map.getVertice(edge).build(this);
 }
 
-void Player::trade(Material give, Material take) {
-  if(give == Material::Brick) {
-    numBricks++;
+bool Player::trade(Material give, Material take, Player* other) {
+  vector<int> otherMat = other->giveMaterialAmount();
+  // if player 1 has enough resources to trade
+  if(((give == Material::Brick && numBricks >= 1) || (give == Material::Energy && numEnergy >= 1)
+    || (give == Material::Glass && numGlass >= 1) || (give == Material::Heat && numHeat >= 1) 
+    || (give == Material::Wifi && numWifi >= 1)) &&
+    // and player 2 has enough resources to trade
+    ((take == Material::Brick && otherMat[0] >= 1) || (take == Material::Energy && otherMat[1] >= 1)
+    || (take == Material::Glass && otherMat[2] >= 1) || (take == Material::Heat && otherMat[3] >= 1) 
+    || (take == Material::Wifi && otherMat[4] >= 1))) {
+    // this ugly paragraph of a condition checks if the trade can legally happen
+    // it's not elegant, but this avoids checking and reducing for player 1, 
+    // then finding out player 2 doesn't have the resources and needing to refund player 1
+    if (give == Material::Brick) {
+      numBricks -= 1;
+      other->increase(Material::Brick, 1);
+    }
+    else if (give == Material::Energy) {
+      numEnergy -= 1;
+      other->increase(Material::Energy, 1);
+    }
+    else if (give == Material::Glass) {
+      numGlass -= 1;
+      other->increase(Material::Glass, 1);
+    }
+    else if (give == Material::Heat) {
+      numHeat -= 1;
+      other->increase(Material::Heat, 1);
+    }
+    else if (give == Material::Wifi) {
+      numWifi -= 1;
+      other->increase(Material::Wifi, 1);
+    }
+    if (take == Material::Brick) {
+      numBricks++;
+      other->decrease(Material::Brick, 1);
+    }
+    else if (take == Material::Energy) {
+      numEnergy++;
+      other->decrease(Material::Energy, 1);
+    }
+    else if (take == Material::Glass) {
+      numGlass++;
+      other->decrease(Material::Glass, 1);
+    }
+    else if (take == Material::Heat) {
+      numHeat++;
+      other->decrease(Material::Heat, 1);
+    } 
+    else if (take == Material::Wifi) {
+      numWifi++;
+      other->decrease(Material::Wifi, 1);
+    }
   }
-  else if(give == Material::Energy) {
-    numEnergy++;
-  }
-  else if(give == Material::Glass) {
-    numGlass++;
-  }
-  else if(give == Material::Heat) {
-    numHeat++;
-  }
-  else if(give == Material::Wifi) {
-    numWifi++;
-  }
+  
 
-  if(take == Material::Brick) {
-    numBricks--;
-  }
-  else if(take == Material::Energy) {
-    numEnergy--;
-  }
-  else if(take == Material::Glass) {
-    numGlass--;
-  }
-  else if(take == Material::Heat) {
-    numHeat--;
-  }
-  else if(take == Material::Wifi) {
-    numWifi--;
-  }
+  
 }
 
 int Player::rollDice() {

@@ -26,8 +26,7 @@ export class Player {
     bool buildResidence(int vertex);
     bool improveResidence(int vertex);
     bool buildRoad(int edge);
-    // this simluates a one-sided trade, interface will call on the other side when interpreting the commands
-    void trade(Material give, Material take);
+    bool trade(Material give, Material take);
     int rollDice();
     void setDice(std::unique_ptr<Dice> newDice);
     int loseHalfToGeese();
