@@ -1,0 +1,104 @@
+UML CHANGES REQUIRED BY THE SPECIFICATION
+=========================================
+
+The UML diagram (uml-1.png) has not been edited. Every divergence between the
+implemented code and the diagram is recorded below, with the specification
+section that forced it. Where the specification and the UML disagreed, the
+specification won.
+
+
+1. Player::loseHalfToGeese
+   UML:  int loseHalfToGeese()
+   Now:  std::vector<int> loseHalfToGeese()
+   Spec: 3.6 Moving Geese
+
+   The spec requires printing one "<numResource> <resourceName>" line for each
+   resource type lost. A single int reports only the total, so the caller cannot
+   produce that output. The vector holds per-material counts in the order
+   brick, energy, glass, heat, wifi; the total is its sum.
+
+
+2. Player::stealFrom
+   UML:  void stealFrom(Player& victim)
+   Now:  Material stealFrom(Player& victim)
+   Spec: 3.6 Moving Geese
+
+   The spec requires the line "Builder <colour1> steals <resource> from builder
+   <colour2>." A void return gives the caller no way to name the resource.
+   Precondition: the victim must hold at least one resource. Interface only
+   offers victims whose total is non-zero, as the spec's candidate list
+   ("have a non-zero number of resources") already requires.
+
+
+3. Player::buildResidence
+   UML:  bool buildResidence(int vertex)
+   Now:  bool buildResidence(int vertex, bool beginning)
+   Spec: 3.1 Building Residences, 4.1 Beginning of Game
+
+   Spec 3.1 gives two conditions for building a residence: no adjacent
+   residence, AND "it is either the beginning of the game or they have built a
+   road that is adjacent to the vertex". The opening basements of 4.1 are also
+   placed without paying resources. The flag distinguishes the two cases.
+
+
+4. Map::canBuildResidence
+   UML:  bool canBuildResidence(int vertex, Player *p)
+   Now:  bool canBuildResidence(int vertex, Player *p, bool beginning)
+   Spec: 3.1 Building Residences
+
+   Same rule as above. The previous implementation enforced only the adjacency
+   condition and allowed a residence anywhere on the board, which is the second
+   condition of 3.1 going unchecked.
+
+
+5. Vertice::buildSettlement
+   UML:  bool buildSettlement(Player *owner)
+   Now:  bool buildSettlement(Player *owner, bool freeBuild)
+   Spec: 4.1 Beginning of Game
+
+   The two opening basements are chosen, not purchased; 4.1 describes no cost
+   and a builder starts with no resources, so charging would make the opening
+   impossible. freeBuild skips the cost check and deduction only.
+
+
+6. Player::getBuildingPoints  (new member, not on the UML)
+   Now:  int getBuildingPoints() const
+   Spec: 2.7 Builders, 4.4 End of Game
+
+   2.7 requires printing "<numPoints> building points" in a builder's status and
+   4.4 ends the game at 10 or more. The UML has a private buildingPoints field
+   but no accessor, so neither was reachable from outside Player. Computed from
+   the builder's settlements rather than stored, so it cannot drift out of sync
+   when a residence is improved.
+
+
+7. Map::getGooseTile  (new member, not on the UML)
+   Now:  int getGooseTile() const
+   Spec: 3.7 Saving a Game, 3.6 Moving Geese
+
+   3.7 requires the saved file's last line to be the tile index holding the
+   geese. 3.6 forbids replacing the geese on the tile they already occupy.
+   Map stored the goose as a Tile* with no way to recover its index.
+
+
+8. Interface  (class present on the UML, members never specified)
+   Spec: 4 Gameplay, 5 Command-line Interface
+
+   Implemented with the private members and helpers listed in interface.cc.
+   The UML shows the class but not its contents, so this is an addition rather
+   than a contradiction. Public surface is only the constructor
+   Interface(int argc, char *argv[]) and void play().
+
+
+NOT CHANGED, WORTH FLAGGING
+---------------------------
+
+Dice::roll was made virtual with a virtual destructor, LoadedDice::roll made
+public, and the const qualifier dropped, before this pass. Those correct plain
+defects rather than contradict the diagram: without virtual, dispatch through
+Player's unique_ptr<Dice> would never reach the subclass.
+
+Settlement has no back-pointer to its vertex, so Interface derives the vertex
+number for "residences" and for saving by scanning Map's vertices. This avoids
+a further UML change at the cost of a linear scan, which is irrelevant at 54
+vertices.

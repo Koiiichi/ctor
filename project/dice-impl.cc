@@ -8,16 +8,23 @@ using namespace std;
 Dice::Dice(): rng{static_cast<unsigned>(seed)} {}
 
 int LoadedDice::roll() {
-  cout << "enter a number between 2 and 12: " ;
-  string input;
-  cin >> input;
-  try {
-    int temp{stoi(input)};
-    return temp;
-  }
-  catch (...) {
-    cout << "Invalid argument";
-    return roll();
+  while (true) {
+    cout << "Input a roll between 2 and 12:" << endl;
+    cout << "> ";
+    string input;
+    if (!(cin >> input)) {
+      return 0;
+    }
+    try {
+      size_t consumed = 0;
+      int value = stoi(input, &consumed);
+      if (consumed == input.size() && value >= 2 && value <= 12) {
+        return value;
+      }
+    }
+    catch (...) {
+    }
+    cout << "Invalid roll." << endl;
   }
 }
 

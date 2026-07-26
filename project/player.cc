@@ -23,14 +23,15 @@ export class Player {
   std::vector<Settlement *> settlements;
   public:
     Player(Colour colour, std::unique_ptr<Dice> dice, Map& map);
-    bool buildResidence(int vertex);
+    bool buildResidence(int vertex, bool beginning);
     bool improveResidence(int vertex);
     bool buildRoad(int edge);
     bool trade(Material give, Material take, Player *other);
     int rollDice();
     void setDice(std::unique_ptr<Dice> newDice);
-    int loseHalfToGeese();
-    void stealFrom(Player& victim);
+    std::vector<int> loseHalfToGeese();
+    Material stealFrom(Player& victim);
+    int getBuildingPoints() const;
     void reduce(Material material, int amount);
     void increase(Material material, int amount);
     char getColour();

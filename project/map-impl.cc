@@ -153,7 +153,7 @@ bool Map::canBuildRoad(int edge, Player *p) {
   return false;
 }
 
-bool Map::canBuildResidence(int vertex, Player *p) {
+bool Map::canBuildResidence(int vertex, Player *p, bool beginning) {
   if (vertex < 0 || vertex >= static_cast<int>(vertices.size())) return false;
   if (vertices[vertex].getSettlement() != nullptr) return false;
   for (auto *e : vertices[vertex].getEdges()) {
@@ -161,7 +161,18 @@ bool Map::canBuildResidence(int vertex, Player *p) {
         e->getV1() == &vertices[vertex] ? e->getV2() : e->getV1();
     if (other->getSettlement() != nullptr) return false;
   }
-  return true;
+  if (beginning) return true;
+  for (auto *e : vertices[vertex].getEdges()) {
+    if (e->getRoad() == p) return true;
+  }
+  return false;
+}
+
+int Map::getGooseTile() const {
+  for (int i = 0; i < static_cast<int>(tiles.size()); ++i) {
+    if (&tiles[i] == goosed) return i;
+  }
+  return -1;
 }
 
 vector<Player *> Map::buildersOnTile(int tileIndex) const {

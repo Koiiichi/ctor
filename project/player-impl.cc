@@ -29,8 +29,8 @@ static Material pickWeighted(const vector<int> &counts) {
 Player::Player(Colour colour, unique_ptr<Dice> dice, Map& map):
   colour{colour}, dice{std::move(dice)}, map{map} {}
 
-bool Player::buildResidence(int vertex) {
-  bool result = map.getVertice(vertex).buildSettlement(this);
+bool Player::buildResidence(int vertex, bool beginning) {
+  bool result = map.getVertice(vertex).buildSettlement(this, beginning);
   if(result) {
     settlements.emplace_back(map.getVertice(vertex).getSettlement());
   }
@@ -111,26 +111,38 @@ void Player::setDice(unique_ptr<Dice> newDice) {
   dice = std::move(newDice);
 }
 
-int Player::loseHalfToGeese() {
+vector<int> Player::loseHalfToGeese() {
+  vector<int> lost(5, 0);
   int sum = numBricks + numEnergy + numGlass + numHeat + numWifi;
   if(sum < 10) {
-    return 0;
+    return lost;
   }
   int halfTotal = sum / 2;
+  const Material order[] = {Material::Brick, Material::Energy, Material::Glass,
+                            Material::Heat, Material::Wifi};
   for(int i = 0; i < halfTotal; ++i) {
-    reduce(pickWeighted(giveMaterialAmount()), 1);
+    Material taken = pickWeighted(giveMaterialAmount());
+    reduce(taken, 1);
+    for(int j = 0; j < 5; ++j) {
+      if(order[j] == taken) ++lost[j];
+    }
   }
-  return halfTotal;
+  return lost;
 }
 
-void Player::stealFrom(Player& victim) {
-  vector<int> counts = victim.giveMaterialAmount();
-  if(counts[0] + counts[1] + counts[2] + counts[3] + counts[4] == 0) {
-    return;
-  }
-  Material stolen = pickWeighted(counts);
+Material Player::stealFrom(Player& victim) {
+  Material stolen = pickWeighted(victim.giveMaterialAmount());
   victim.reduce(stolen, 1);
   increase(stolen, 1);
+  return stolen;
+}
+
+int Player::getBuildingPoints() const {
+  int total = 0;
+  for(auto *s : settlements) {
+    total += s->buildingPoints();
+  }
+  return total;
 }
 
 // reduce is only called within a check-then-act function

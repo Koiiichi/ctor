@@ -14,7 +14,7 @@ export class Vertice {
   std::vector<Edge *> edges;
   public:
     Vertice(int number);
-    bool buildSettlement(Player *owner);
+    bool buildSettlement(Player *owner, bool freeBuild);
     bool improve(Player *owner);
     void giveMat(Material mat);
     std::string display() const;

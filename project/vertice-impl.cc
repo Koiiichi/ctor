@@ -8,19 +8,21 @@ using namespace std;
 
 Vertice::Vertice(int number): number{number} {}
 
-bool Vertice::buildSettlement(Player *owner) {
+bool Vertice::buildSettlement(Player *owner, bool freeBuild) {
   if (house != nullptr) {
     return false;
   }
-  vector<int> resources = owner->giveMaterialAmount();
-  if (resources[0] < 1 || resources[1] < 1 || resources[2] < 1 ||
-      resources[4] < 1) {
-    return false;
+  if (!freeBuild) {
+    vector<int> resources = owner->giveMaterialAmount();
+    if (resources[0] < 1 || resources[1] < 1 || resources[2] < 1 ||
+        resources[4] < 1) {
+      return false;
+    }
+    owner->reduce(Material::Brick, 1);
+    owner->reduce(Material::Energy, 1);
+    owner->reduce(Material::Glass, 1);
+    owner->reduce(Material::Wifi, 1);
   }
-  owner->reduce(Material::Brick, 1);
-  owner->reduce(Material::Energy, 1);
-  owner->reduce(Material::Glass, 1);
-  owner->reduce(Material::Wifi, 1);
   house = make_unique<Settlement>(owner);
   return true;
 }

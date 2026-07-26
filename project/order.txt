@@ -12,6 +12,7 @@ tile.cc
 map.cc
 player.cc
 board.cc
+interface.cc
 subj_obs-impl.cc
 boardSource-impl.cc
 settlement-impl.cc
@@ -21,4 +22,5 @@ tile-impl.cc
 map-impl.cc
 player-impl.cc
 dice-impl.cc
+interface-impl.cc
 main.cc
