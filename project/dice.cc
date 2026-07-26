@@ -6,14 +6,14 @@ import <chrono>;
 
 export class Dice {
   protected:
-    std::default_random_engine rng{static_cast<unsigned>(seed)};
+    std::mt19937 rng;
   public:
     virtual int roll() = 0;
     static int seed;
     static void setSeed(int newSeed) {
       seed = newSeed;
     }
-    Dice() = default;
+    Dice();
     virtual ~Dice() = default;
 };
 

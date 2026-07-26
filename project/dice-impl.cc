@@ -4,6 +4,9 @@ import <iostream>;
 import <string>;
 
 using namespace std;
+
+Dice::Dice(): rng{static_cast<unsigned>(seed)} {}
+
 int LoadedDice::roll() {
   cout << "enter a number between 2 and 12: " ;
   string input;
