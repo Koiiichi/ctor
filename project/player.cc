@@ -16,7 +16,6 @@ export class Player {
   int numGlass = 0;
   int numHeat = 0;
   int numWifi = 0;
-  int buildingPoints = 0;
   Colour colour;
   std::unique_ptr<Dice> dice;
   Map& map;
