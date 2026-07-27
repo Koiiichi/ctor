@@ -7,7 +7,7 @@ section that forced it. Where the specification and the UML disagreed, the
 specification won.
 
 
-1. Player::loseHalfToGeese
+1. Player::loseHalfToGeese (DONE)
    UML:  int loseHalfToGeese()
    Now:  std::vector<int> loseHalfToGeese()
    Spec: 3.6 Moving Geese
@@ -18,7 +18,7 @@ specification won.
    brick, energy, glass, heat, wifi; the total is its sum.
 
 
-2. Player::stealFrom
+2. Player::stealFrom (DONE)
    UML:  void stealFrom(Player& victim)
    Now:  Material stealFrom(Player& victim)
    Spec: 3.6 Moving Geese
@@ -30,7 +30,7 @@ specification won.
    ("have a non-zero number of resources") already requires.
 
 
-3. Player::buildResidence
+3. Player::buildResidence (DONE)
    UML:  bool buildResidence(int vertex)
    Now:  bool buildResidence(int vertex, bool beginning)
    Spec: 3.1 Building Residences, 4.1 Beginning of Game
@@ -41,7 +41,7 @@ specification won.
    placed without paying resources. The flag distinguishes the two cases.
 
 
-4. Map::canBuildResidence
+4. Map::canBuildResidence (DONE)
    UML:  bool canBuildResidence(int vertex, Player *p)
    Now:  bool canBuildResidence(int vertex, Player *p, bool beginning)
    Spec: 3.1 Building Residences
@@ -51,7 +51,7 @@ specification won.
    condition of 3.1 going unchecked.
 
 
-5. Vertice::buildSettlement
+5. Vertice::buildSettlement (DONE)
    UML:  bool buildSettlement(Player *owner)
    Now:  bool buildSettlement(Player *owner, bool freeBuild)
    Spec: 4.1 Beginning of Game
@@ -61,7 +61,7 @@ specification won.
    impossible. freeBuild skips the cost check and deduction only.
 
 
-6. Player::getBuildingPoints  (new member, not on the UML)
+6. Player::getBuildingPoints  (new member, not on the UML) (DONE)
    Now:  int getBuildingPoints() const
    Spec: 2.7 Builders, 4.4 End of Game
 
@@ -72,7 +72,7 @@ specification won.
    when a residence is improved.
 
 
-7. Map::getGooseTile  (new member, not on the UML)
+7. Map::getGooseTile  (new member, not on the UML) (DONE)
    Now:  int getGooseTile() const
    Spec: 3.7 Saving a Game, 3.6 Moving Geese
 
@@ -81,7 +81,7 @@ specification won.
    Map stored the goose as a Tile* with no way to recover its index.
 
 
-8. Interface  (class present on the UML, members never specified)
+8. Interface  (class present on the UML, members never specified) (DONE, false alarm, already handled in existing case)
    Spec: 4 Gameplay, 5 Command-line Interface
 
    Implemented with the private members and helpers listed in interface.cc.
@@ -90,15 +90,28 @@ specification won.
    Interface(int argc, char *argv[]) and void play().
 
 
-NOT CHANGED, WORTH FLAGGING
+9. Edge::build (DONE)
+   UML:  bool build(Player *owner)
+   Now:  bool build(Player *owner, bool freeBuild = false)
+   Spec: 3.7 Saving a Game, 4.1 Beginning of Game
+
+   Restoring a saved game must reproduce the roads exactly as written, not
+   re-purchase them. build unconditionally charged 1 HEAT and 1 WIFI, and the
+   save file restores resources after the roads, so every road in a loaded game
+   failed its cost check and was silently dropped. freeBuild skips the cost
+   check and deduction only, mirroring Vertice::buildSettlement (change 5).
+   The default argument leaves every normal build call unchanged.
+
+
+NOT CHANGED, WORTH FLAGGING 
 ---------------------------
 
 Dice::roll was made virtual with a virtual destructor, LoadedDice::roll made
 public, and the const qualifier dropped, before this pass. Those correct plain
 defects rather than contradict the diagram: without virtual, dispatch through
-Player's unique_ptr<Dice> would never reach the subclass.
+Player's unique_ptr<Dice> would never reach the subclass. (DONE, false alarm, already handled in existing case)
 
 Settlement has no back-pointer to its vertex, so Interface derives the vertex
 number for "residences" and for saving by scanning Map's vertices. This avoids
 a further UML change at the cost of a linear scan, which is irrelevant at 54
-vertices.
+vertices. (DONE, false alarm, already handled in existing case)

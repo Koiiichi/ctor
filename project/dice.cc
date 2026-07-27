@@ -17,7 +17,6 @@ export class Dice {
     virtual ~Dice() = default;
 };
 
-// give it a default value
 int Dice::seed = 0;
 
 export class LoadedDice: public Dice {

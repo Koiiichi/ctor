@@ -8,16 +8,18 @@ using namespace std;
 Edge::Edge(Vertice *v1, Vertice *v2, int number):
   v1{v1}, v2{v2}, num{number} {}
 
-bool Edge::build(Player *owner) {
+bool Edge::build(Player *owner, bool freeBuild) {
   if (road != nullptr) {
     return false;
   }
-  vector<int> resources = owner->giveMaterialAmount();
-  if (resources[3] < 1 || resources[4] < 1) {
-    return false;
+  if (!freeBuild) {
+    vector<int> resources = owner->giveMaterialAmount();
+    if (resources[3] < 1 || resources[4] < 1) {
+      return false;
+    }
+    owner->reduce(Material::Heat, 1);
+    owner->reduce(Material::Wifi, 1);
   }
-  owner->reduce(Material::Heat, 1);
-  owner->reduce(Material::Wifi, 1);
   road = owner;
   return true;
 }

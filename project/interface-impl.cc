@@ -369,11 +369,10 @@ bool Interface::duringTurn() {
         cout << "Invalid command." << endl;
         continue;
       }
-      cout << "Builder " << COLOUR_NAMES[curTurn] << " offers builder "
-           << COLOUR_NAMES[other] << " one " << materialName(give)
-           << " for one " << materialName(take) << "." << endl;
-      cout << "Does builder " << COLOUR_NAMES[other] << " accept this offer?"
-           << endl;
+      cout << COLOUR_NAMES[curTurn] << " offers " << COLOUR_NAMES[other]
+           << " one " << materialName(give) << " for one "
+           << materialName(take) << "." << endl;
+      cout << "Does " << COLOUR_NAMES[other] << " accept this offer?" << endl;
       cout << "> ";
       string answer;
       if (!(cin >> answer)) return false;
@@ -496,7 +495,7 @@ bool Interface::loadGame(const string &file) {
       }
     }
     for (int e : roads[i]) {
-      map->getEdge(e).build(players[i].get());
+      map->getEdge(e).build(players[i].get(), true);
     }
     players[i]->increase(Material::Brick, resources[i][0]);
     players[i]->increase(Material::Energy, resources[i][1]);
