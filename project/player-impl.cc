@@ -6,6 +6,8 @@ import<random>;
 
 using namespace std;
 
+static const int LONGEST_ROAD_BONUS = 2;
+
 static mt19937 &playerRng() {
   static mt19937 engine{static_cast<unsigned>(Dice::seed)};
   return engine;
@@ -137,10 +139,13 @@ Material Player::stealFrom(Player& victim) {
   return stolen;
 }
 
-int Player::getBuildingPoints() const {
+int Player::getBuildingPoints(bool bonusEnabled) const {
   int total = 0;
   for(auto *s : settlements) {
     total += s->buildingPoints();
+  }
+  if(bonusEnabled && map.hasLongestRoad(this)) {
+    total += LONGEST_ROAD_BONUS;
   }
   return total;
 }

@@ -13,6 +13,7 @@ import tileInfo;
 using namespace std;
 
 static const char *COLOUR_NAMES[] = {"Blue", "Red", "Orange", "Yellow"};
+static const int BANK_TRADE_RATIO = 4;
 
 static string materialName(Material mat) {
   switch (mat) {
@@ -83,6 +84,8 @@ Interface::Interface(int argc, char *argv[]) {
       boardFile = argv[++i];
     } else if (arg == "-random-board") {
       useRandomBoard = true;
+    } else if (arg == "-enablebonus") {
+      bonusEnabled = true;
     }
   }
 }
@@ -141,7 +144,8 @@ void Interface::openingBasements() {
 
 void Interface::printStatus(int index) const {
   vector<int> res = players[index]->giveMaterialAmount();
-  cout << COLOUR_NAMES[index] << " has " << players[index]->getBuildingPoints()
+  cout << COLOUR_NAMES[index] << " has "
+       << players[index]->getBuildingPoints(bonusEnabled)
        << " building points, " << res[0] << " brick, " << res[1] << " energy, "
        << res[2] << " glass, " << res[3] << " heat, and " << res[4] << " WiFi."
        << endl;
@@ -288,7 +292,9 @@ bool Interface::beginningOfTurn() {
       cout << "Valid commands:" << endl << "board" << endl << "status" << endl
            << "residences" << endl << "build-road <edge#>" << endl
            << "build-res <housing#>" << endl << "improve <housing#>" << endl
-           << "trade <colour> <give> <take>" << endl << "next" << endl
+           << "trade <colour> <give> <take>" << endl
+           << "bank <give> <take>" << endl << "enable-bonus" << endl
+           << "disable-bonus" << endl << "next" << endl
            << "save <file>" << endl << "help" << endl;
     } else {
       cout << "Invalid command." << endl;
@@ -313,7 +319,9 @@ bool Interface::duringTurn() {
       cout << "Valid commands:" << endl << "board" << endl << "status" << endl
            << "residences" << endl << "build-road <edge#>" << endl
            << "build-res <housing#>" << endl << "improve <housing#>" << endl
-           << "trade <colour> <give> <take>" << endl << "next" << endl
+           << "trade <colour> <give> <take>" << endl
+           << "bank <give> <take>" << endl << "enable-bonus" << endl
+           << "disable-bonus" << endl << "next" << endl
            << "save <file>" << endl << "help" << endl;
     } else if (cmd == "save") {
       string file;
@@ -328,6 +336,9 @@ bool Interface::duringTurn() {
         cout << "You cannot build here." << endl;
       } else if (!players[curTurn]->buildRoad(edge)) {
         cout << "You do not have enough resources." << endl;
+      } else {
+        map->updateLongestRoad();
+        if (winner() >= 0) return true;
       }
     } else if (cmd == "build-res") {
       string word;
@@ -380,6 +391,29 @@ bool Interface::duringTurn() {
       if (!players[curTurn]->trade(give, take, players[other].get())) {
         cout << "You do not have enough resources." << endl;
       }
+    } else if (cmd == "enable-bonus") {
+      bonusEnabled = true;
+      cout << "Bonus features are now enabled." << endl;
+    } else if (cmd == "disable-bonus") {
+      bonusEnabled = false;
+      cout << "Bonus features are now disabled." << endl;
+    } else if (bonusEnabled && cmd == "bank") {
+      string giveWord, takeWord;
+      if (!(cin >> giveWord >> takeWord)) return false;
+      Material give, take;
+      if (!parseMaterial(giveWord, give) || !parseMaterial(takeWord, take)) {
+        cout << "Invalid command." << endl;
+        continue;
+      }
+      vector<int> res = players[curTurn]->giveMaterialAmount();
+      if (res[materialCode(give)] < BANK_TRADE_RATIO) {
+        cout << "You do not have enough resources." << endl;
+        continue;
+      }
+      players[curTurn]->reduce(give, BANK_TRADE_RATIO);
+      players[curTurn]->increase(take, 1);
+      cout << COLOUR_NAMES[curTurn] << " trades four " << materialName(give)
+           << " to the bank for one " << materialName(take) << "." << endl;
     } else {
       cout << "Invalid command." << endl;
     }
@@ -388,7 +422,7 @@ bool Interface::duringTurn() {
 
 int Interface::winner() const {
   for (int i = 0; i < 4; ++i) {
-    if (players[i]->getBuildingPoints() >= 10) return i;
+    if (players[i]->getBuildingPoints(bonusEnabled) >= 10) return i;
   }
   return -1;
 }
@@ -504,6 +538,7 @@ bool Interface::loadGame(const string &file) {
     players[i]->increase(Material::Wifi, resources[i][4]);
   }
   if (gooseTile >= 0) map->placeGoose(gooseTile);
+  map->updateLongestRoad();
   return true;
 }
 

@@ -10,6 +10,27 @@ static const int VERTEX_ROWS = 11;
 static const int VERTEX_COLS = 6;
 static const int DISPLAY_ROWS = 41;
 static const int DISPLAY_COLS = 54;
+static const int MIN_LONGEST_ROAD = 5;
+
+static int roadWalk(Vertice *v, Player *p, vector<bool> &used) {
+  int best = 0;
+  for (auto *e : v->getEdges()) {
+    if (e->getRoad() != p) continue;
+    int index = e->getNumber();
+    if (used[index]) continue;
+    Vertice *other = e->getV1() == v ? e->getV2() : e->getV1();
+    Settlement *house = other->getSettlement();
+    if (house != nullptr && house->getOwner() != p) {
+      if (best < 1) best = 1;
+      continue;
+    }
+    used[index] = true;
+    int len = 1 + roadWalk(other, p, used);
+    used[index] = false;
+    if (len > best) best = len;
+  }
+  return best;
+}
 
 static vector<int> rowPattern(int row) {
   if (row == 0 || row == TILE_ROWS - 1) return {2};
@@ -173,6 +194,44 @@ int Map::getGooseTile() const {
     if (&tiles[i] == goosed) return i;
   }
   return -1;
+}
+
+int Map::longestRoadFor(Player *p) {
+  vector<bool> used(edges.size(), false);
+  int best = 0;
+  for (auto &v : vertices) {
+    int len = roadWalk(&v, p, used);
+    if (len > best) best = len;
+  }
+  return best;
+}
+
+void Map::updateLongestRoad() {
+  if (longestRoadHolder != nullptr) {
+    longestRoadLength = longestRoadFor(longestRoadHolder);
+  }
+  vector<Player *> owners;
+  for (auto &e : edges) {
+    Player *road = e.getRoad();
+    if (road == nullptr || road == longestRoadHolder) continue;
+    bool seen = false;
+    for (auto *o : owners) {
+      if (o == road) seen = true;
+    }
+    if (!seen) owners.emplace_back(road);
+  }
+  for (auto *p : owners) {
+    int len = longestRoadFor(p);
+    if (len < MIN_LONGEST_ROAD) continue;
+    if (longestRoadHolder == nullptr || len > longestRoadLength) {
+      longestRoadHolder = p;
+      longestRoadLength = len;
+    }
+  }
+}
+
+bool Map::hasLongestRoad(const Player *p) const {
+  return p != nullptr && p == longestRoadHolder;
 }
 
 vector<Player *> Map::buildersOnTile(int tileIndex) const {

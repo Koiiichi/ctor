@@ -30,7 +30,7 @@ export class Player {
     void setDice(std::unique_ptr<Dice> newDice);
     std::vector<int> loseHalfToGeese();
     Material stealFrom(Player& victim);
-    int getBuildingPoints() const;
+    int getBuildingPoints(bool bonusEnabled = false) const;
     void reduce(Material material, int amount);
     void increase(Material material, int amount);
     char getColour();

@@ -115,3 +115,142 @@ Settlement has no back-pointer to its vertex, so Interface derives the vertex
 number for "residences" and for saving by scanning Map's vertices. This avoids
 a further UML change at the cost of a linear scan, which is irrelevant at 54
 vertices. (DONE, false alarm, already handled in existing case)
+
+
+EXTRA CREDIT FEATURES
+---------------------
+
+Everything above records a place where the specification forced the code to
+diverge from the UML. Nothing in this section does. These two features are
+additions on top of a complete implementation; the specification neither
+requires nor mentions either of them, and neither corrects a defect. They are
+recorded here so the diagram stays reconcilable by the same process, not as
+further numbered entries, which would misrepresent why they exist.
+
+
+SHARED TOGGLE
+
+Both features sit behind one switch, a private bool on Interface
+(bonusEnabled, default false). The guidelines require an enhancement to be
+selectable by a command-line flag on the same binary rather than a separately
+compiled version, and then say that it would be even better if the
+enhancements could be turned on and off dynamically while the program is
+running. The better version is what is implemented, so the switch has two
+controls:
+
+  -enablebonus              command-line flag, parsed in Interface's
+                            constructor alongside -seed / -load / -board /
+                            -random-board. Sets the starting value only.
+  enable-bonus              during-turn command, sets the bool to true.
+  disable-bonus             during-turn command, sets the bool to false.
+
+The two commands are recognised unconditionally, whatever the bool currently
+holds and whether or not the flag was passed. Gating them behind the bool they
+control would make it impossible to switch either feature on at runtime. Both
+are listed in the static help text, unconditionally, like every other command
+in that list.
+
+With the bool false, neither feature is observable. "bank" falls through to
+"Invalid command." like any other unrecognised word, and building-point totals
+are computed exactly as they were before either feature existed.
+
+
+FEATURE 1: BANK TRADING
+
+A fixed-ratio trade against the bank, with no second builder involved.
+
+  Command:  bank <give> <take>
+  Ratio:    4:1. Four of <give> are deducted, one of <take> is added, both on
+            the builder whose turn it is.
+  Phase:    during the turn, the same phase as "trade".
+
+There are no ports or variable ratios. The board model has no concept of a
+port and inventing one would need adjacency data with no basis in the spec.
+
+Reused rather than duplicated:
+  - parseMaterial, the same <give>/<take> parsing "trade" already uses.
+  - materialCode, to index the vector from Player::giveMaterialAmount.
+  - Player::reduce and Player::increase for the transfer. No new method was
+    added to Player, Map, Vertice or Edge.
+  - "You do not have enough resources.", the string already used elsewhere for
+    exactly this situation, printed when the builder holds fewer than four of
+    <give>.
+
+Success prints one line in the register of the existing trade output:
+"<Colour> trades four <GIVE> to the bank for one <TAKE>."
+
+
+FEATURE 2: LONGEST ROAD BONUS
+
+The builder holding the longest continuous chain of their own roads gets a
+bonus on their building-point total, and loses it when another builder
+overtakes them.
+
+  Minimum qualifying length:  5 roads (edges)
+  Bonus:                      +2 building points
+  Command:                    none
+
+Longest road for one builder is the longest simple path through that builder's
+own edges: no edge is reused, the path may run through a vertex that is empty
+or that holds that same builder's own residence, and it is blocked from
+continuing through a vertex holding another builder's residence. That blocking
+rule is part of what "longest road" means in the real game and changes the
+answer in ordinary board positions, so it is implemented rather than skipped.
+The search is a plain depth-first backtrack over the builder's own edge
+subgraph, run from every vertex. At 72 edges this needs no optimisation.
+
+The bonus transfers only on a strict excess: a new builder must be strictly
+longer than the current holder's recorded length to take it, so a tie leaves
+it where it is. With no holder, the first builder to reach 5 takes it. This
+matches the real game and stops the bonus flickering between builders on ties.
+
+Reaching 10 or more points because of the bonus wins the game, as it does in
+the real game. There is no special case suppressing that.
+
+State lives on Map, not Player: Map owns every Edge and can therefore see
+every builder's roads, while Player has no way to see another Player's state.
+Map holds the current holder and the length that earned it, both private. The
+holder is recomputed after a successful build-road in Interface::duringTurn
+and after a load restores roads, not on every query, since a new road is the
+only thing that can change it.
+
+Player::getBuildingPoints asks Map through the reference Player already holds
+and adds 2 when Map says this builder holds the bonus, but only when the
+shared bool is true. That is how a feature with no command of its own is
+gated: with the bool false the check is skipped and the total is exactly what
+it was before. Map does not store its own copy of the enabled state and does
+not know about Interface. Interface holds the authority and passes the current
+value down; Map is only ever asked who the holder is.
+
+
+UML SURFACE AFFECTED
+
+Two of the three additions are visible on the diagram. The diagram itself has
+not been edited, in keeping with the rest of this file.
+
+  Map:  + updateLongestRoad() : void 
+        + hasLongestRoad(const Player *p) : bool
+        - longestRoadHolder: *Player
+        - longestRoadLength: int
+        - longestRoadFor(Player *p) : int
+
+        Two new public members on a class the diagram does show in full. The
+        query is the one Player calls; the recompute is the one Interface
+        calls after a road is built. The holder, the length and the
+        depth-first helper are private. (DONE)
+
+  Player: getBuildingPoints() : int 
+          becomes
+          getBuildingPoints(bool bonusEnabled = false) : int
+
+        getBuildingPoints is itself not on the diagram; it was added under
+        change 6 above. The default argument leaves every pre-existing call
+        computing the same total it did before, in the same way the default
+        argument on Edge::build does under change 9. (DONE)
+
+  Interface: no diagram change. The diagram shows the class without its
+        members, so the new private bool and the three new command words are
+        an addition to something never specified, exactly as recorded under
+        change 8. The public surface is still only the constructor and play().
+
+On manual check: Interface on UML has BoardSource which I don't believe is a variable on interface definition. 
