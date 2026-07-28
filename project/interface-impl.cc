@@ -95,7 +95,7 @@ void Interface::setUpBoard() {
     RandomBoardSource src{static_cast<unsigned>(Dice::seed)};
     map = make_unique<Map>(src);
   } else {
-    RandomBoardSource src{static_cast<unsigned>(Dice::seed)};
+    FileBoardSource src{"layout.txt"};
     map = make_unique<Map>(src);
   }
   for (int i = 0; i < map->numTiles(); ++i) {
@@ -133,6 +133,9 @@ void Interface::openingBasements() {
         continue;
       }
       players[p]->buildResidence(vertex, true);
+      if (slot >= 4) {
+        map->giveOpeningResources(vertex, players[p].get());
+      }
       break;
     }
   }
@@ -408,7 +411,7 @@ string Interface::boardLayout() const {
 void Interface::saveGame(const string &file) const {
   ofstream out{file};
   if (!out) return;
-  out << curTurn << "\n";
+  out << (curTurn + 1) % 4 << "\n";
   for (int i = 0; i < 4; ++i) {
     vector<int> res = players[i]->giveMaterialAmount();
     out << res[0] << " " << res[1] << " " << res[2] << " " << res[3] << " "
@@ -496,7 +499,9 @@ bool Interface::loadGame(const string &file) {
       }
     }
     for (int e : roads[i]) {
-      map->getEdge(e).build(players[i].get());
+      if (e >= 0 && e < map->numEdges()) {
+        map->getEdge(e).restore(players[i].get());
+      }
     }
     players[i]->increase(Material::Brick, resources[i][0]);
     players[i]->increase(Material::Energy, resources[i][1]);

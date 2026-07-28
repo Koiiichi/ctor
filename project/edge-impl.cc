@@ -22,6 +22,14 @@ bool Edge::build(Player *owner) {
   return true;
 }
 
+bool Edge::restore(Player *owner) {
+  if (road != nullptr) {
+    return false;
+  }
+  road = owner;
+  return true;
+}
+
 string Edge::display() const {
   if (road != nullptr) {
     string temp;

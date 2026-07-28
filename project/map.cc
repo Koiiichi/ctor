@@ -18,6 +18,7 @@ export class Map: public Subject {
     void placeGoose(int tileIndex);
     bool canBuildRoad(int edge, Player *p);
     bool canBuildResidence(int vertex, Player *p, bool beginning);
+    void giveOpeningResources(int vertex, Player *p);
     int getGooseTile() const;
     std::vector<Player *> buildersOnTile(int tileIndex) const;
     std::string display() const;

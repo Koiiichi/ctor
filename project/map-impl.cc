@@ -168,6 +168,24 @@ bool Map::canBuildResidence(int vertex, Player *p, bool beginning) {
   return false;
 }
 
+void Map::giveOpeningResources(int vertex, Player *p) {
+  if (vertex < 0 || vertex >= static_cast<int>(vertices.size())) return;
+  for (auto &tile : tiles) {
+    bool touchesVertex = false;
+    for (auto *v : tile.getVertices()) {
+      if (v == &vertices[vertex]) {
+        touchesVertex = true;
+        break;
+      }
+    }
+    if (!touchesVertex) continue;
+    Material mat = tile.display().mat;
+    if (mat != Material::Park) {
+      p->increase(mat, 1);
+    }
+  }
+}
+
 int Map::getGooseTile() const {
   for (int i = 0; i < static_cast<int>(tiles.size()); ++i) {
     if (&tiles[i] == goosed) return i;

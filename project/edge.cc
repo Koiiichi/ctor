@@ -11,6 +11,7 @@ export class Edge {
   public:
     Edge(Vertice *v1, Vertice *v2, int number);
     bool build(Player *owner);
+    bool restore(Player *owner);
     std::string display() const;
     Vertice *getV1() const;
     Vertice *getV2() const;

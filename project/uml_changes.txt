@@ -102,3 +102,22 @@ Settlement has no back-pointer to its vertex, so Interface derives the vertex
 number for "residences" and for saving by scanning Map's vertices. This avoids
 a further UML change at the cost of a linear scan, which is irrelevant at 54
 vertices.
+
+
+9. Edge::restore  (new member, not on the UML)
+   Now:  bool restore(Player *owner)
+   Spec: 3.7 Saving a Game
+
+   Loading must reconstruct roads that were already paid for before the game
+   was saved. Calling Edge::build during loading incorrectly checks and deducts
+   resources, so restore assigns ownership without applying gameplay costs.
+
+
+10. Map::giveOpeningResources  (new member, not on the UML)
+    Now:  void giveOpeningResources(int vertex, Player *p)
+    Spec: 1.1 Gameplay Overview, 4.1 Beginning of Game
+
+    After a builder places their second opening basement, they receive one
+    resource from each adjacent non-PARK tile. Map owns the tile-to-vertex
+    topology, so it performs this lookup without exposing topology details to
+    Interface.
