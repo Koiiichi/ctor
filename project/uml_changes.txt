@@ -121,3 +121,14 @@ vertices.
     resource from each adjacent non-PARK tile. Map owns the tile-to-vertex
     topology, so it performs this lookup without exposing topology details to
     Interface.
+
+
+11. Player::bankTrade  (bonus member, not on the UML)
+    Now:  bool bankTrade(Material give, Material take)
+    Bonus: 4:1 bank trading
+
+    When the program is started with -enablebonus, the active builder may trade
+    four units of one material to the bank for one unit of a different
+    material. Player owns the resource counts, so it validates and performs the
+    exchange atomically. Core gameplay and help output are unchanged when the
+    bonus flag is absent.

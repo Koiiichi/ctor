@@ -103,6 +103,27 @@ bool Player::trade(Material give, Material take, Player* other) {
   return false;
 }
 
+bool Player::bankTrade(Material give, Material take) {
+  if (give == take || give == Material::Park || take == Material::Park) {
+    return false;
+  }
+
+  vector<int> resources = giveMaterialAmount();
+  int giveIndex = 0;
+  if (give == Material::Energy) giveIndex = 1;
+  else if (give == Material::Glass) giveIndex = 2;
+  else if (give == Material::Heat) giveIndex = 3;
+  else if (give == Material::Wifi) giveIndex = 4;
+
+  if (resources[giveIndex] < 4) {
+    return false;
+  }
+
+  reduce(give, 4);
+  increase(take, 1);
+  return true;
+}
+
 int Player::rollDice() {
   return dice->roll();
 }

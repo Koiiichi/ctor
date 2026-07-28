@@ -27,6 +27,7 @@ export class Player {
     bool improveResidence(int vertex);
     bool buildRoad(int edge);
     bool trade(Material give, Material take, Player *other);
+    bool bankTrade(Material give, Material take);
     int rollDice();
     void setDice(std::unique_ptr<Dice> newDice);
     std::vector<int> loseHalfToGeese();

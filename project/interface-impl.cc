@@ -83,6 +83,8 @@ Interface::Interface(int argc, char *argv[]) {
       boardFile = argv[++i];
     } else if (arg == "-random-board") {
       useRandomBoard = true;
+    } else if (arg == "-enablebonus") {
+      bonusEnabled = true;
     }
   }
 }
@@ -291,8 +293,11 @@ bool Interface::beginningOfTurn() {
       cout << "Valid commands:" << endl << "board" << endl << "status" << endl
            << "residences" << endl << "build-road <edge#>" << endl
            << "build-res <housing#>" << endl << "improve <housing#>" << endl
-           << "trade <colour> <give> <take>" << endl << "next" << endl
-           << "save <file>" << endl << "help" << endl;
+           << "trade <colour> <give> <take>" << endl;
+      if (bonusEnabled) {
+        cout << "bank-trade <give> <take>" << endl;
+      }
+      cout << "next" << endl << "save <file>" << endl << "help" << endl;
     } else {
       cout << "Invalid command." << endl;
     }
@@ -316,8 +321,11 @@ bool Interface::duringTurn() {
       cout << "Valid commands:" << endl << "board" << endl << "status" << endl
            << "residences" << endl << "build-road <edge#>" << endl
            << "build-res <housing#>" << endl << "improve <housing#>" << endl
-           << "trade <colour> <give> <take>" << endl << "next" << endl
-           << "save <file>" << endl << "help" << endl;
+           << "trade <colour> <give> <take>" << endl;
+      if (bonusEnabled) {
+        cout << "bank-trade <give> <take>" << endl;
+      }
+      cout << "next" << endl << "save <file>" << endl << "help" << endl;
     } else if (cmd == "save") {
       string file;
       if (!(cin >> file)) return false;
@@ -362,6 +370,22 @@ bool Interface::duringTurn() {
       } else if (winner() >= 0) {
         return true;
       }
+    } else if (cmd == "bank-trade" && bonusEnabled) {
+      string giveWord, takeWord;
+      if (!(cin >> giveWord >> takeWord)) return false;
+      Material give, take;
+      if (!parseMaterial(giveWord, give) || !parseMaterial(takeWord, take) ||
+          give == take) {
+        cout << "Invalid command." << endl;
+        continue;
+      }
+      if (!players[curTurn]->bankTrade(give, take)) {
+        cout << "You do not have enough resources." << endl;
+        continue;
+      }
+      cout << "Builder " << COLOUR_NAMES[curTurn] << " trades four "
+           << materialName(give) << " with the bank for one "
+           << materialName(take) << "." << endl;
     } else if (cmd == "trade") {
       string colourWord, giveWord, takeWord;
       if (!(cin >> colourWord >> giveWord >> takeWord)) return false;

@@ -14,6 +14,7 @@ export class Interface {
   bool loadedGame = false;
   std::string boardFile;
   bool useRandomBoard = false;
+  bool bonusEnabled = false;
   std::string loadFile;
 
   void setUpBoard();
