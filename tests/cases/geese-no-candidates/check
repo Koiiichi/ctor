@@ -1,0 +1,7 @@
+
+set -e
+grep -q "Builder Blue has no builders to steal from.$" actual || {
+  echo "missing no-candidates line"; exit 1; }
+grep -q "Choose a builder to steal from." actual && {
+  echo "should not prompt for a steal target"; exit 1; }
+echo "no candidates on tile 0"

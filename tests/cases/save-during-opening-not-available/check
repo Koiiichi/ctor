@@ -1,0 +1,5 @@
+
+set -e
+test -f mid.sv && { echo "a save was taken during the opening"; exit 1; }
+grep -q "You cannot build here.$" actual || { echo "expected the word to be refused"; exit 1; }
+echo "save is not a beginning-of-game command; the word is refused as a vertex"

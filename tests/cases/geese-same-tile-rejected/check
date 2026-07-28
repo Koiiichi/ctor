@@ -1,0 +1,6 @@
+
+set -e
+n=$(grep -c "Choose where to place the GEESE.$" actual)
+test "$n" = "2" || { echo "expected a re-prompt after the rejected tile, saw $n"; exit 1; }
+echo "--- current refusal message for the geese' own tile ---"
+sed -n '/Choose where to place the GEESE.$/{n;p;}' actual | head -1

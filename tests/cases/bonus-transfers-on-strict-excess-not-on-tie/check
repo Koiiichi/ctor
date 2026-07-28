@@ -1,0 +1,18 @@
+
+set -e
+python3 - <<'PY'
+import re
+order = []
+for line in open("actual"):
+    m = re.search(r"(Blue|Red|Orange|Yellow) has (\d+) building points,", line)
+    if m:
+        order.append((m.group(1), int(m.group(2))))
+# order[0] is Red's beginning-of-turn status, then two blocks of four
+tie = dict(order[1:5])
+excess = dict(order[5:9])
+assert tie["Blue"] == 3, ("tie moved the bonus off Blue", tie)
+assert tie["Red"] == 1, ("tie gave Red the bonus", tie)
+assert excess["Blue"] == 1, ("Blue kept the bonus after being beaten", excess)
+assert excess["Red"] == 3, ("Red did not take the bonus", excess)
+print("tie keeps the bonus with Blue; a strictly longer road moves it to Red")
+PY

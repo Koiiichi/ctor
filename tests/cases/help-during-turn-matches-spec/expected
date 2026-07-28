@@ -1,0 +1,16 @@
+Builder Blue's turn.
+Blue has 1 building points, 0 brick, 0 energy, 0 glass, 4 heat, and 0 WiFi.
+> Input a roll between 2 and 12:
+> No builders gained resources.
+> Valid commands:
+board
+status
+residences
+build-road <edge#>
+build-res <housing#>
+improve <housing#>
+trade <colour> <give> <take>
+next
+save <file>
+help
+>

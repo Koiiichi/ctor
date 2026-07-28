@@ -1,0 +1,6 @@
+
+set -e
+grep -q "Blue has 10 building points" actual || {
+  echo "bonus did not carry Blue to ten"; grep "building points" actual; exit 1; }
+grep -q "Would you like to play again?$" actual || { echo "no end of game"; exit 1; }
+echo "win triggered by the longest-road bonus"

@@ -1,0 +1,27 @@
+
+set -e
+python3 - <<'PY'
+def parse(path):
+    lines = open(path).read().strip().split("\n")
+    builders = []
+    for line in lines[1:5]:
+        f = line.split()
+        res = [int(x) for x in f[:5]]
+        rest = f[5:]
+        ri = rest.index("r"); hi = rest.index("h")
+        roads = sorted(int(x) for x in rest[ri + 1:hi])
+        hs = rest[hi + 1:]
+        housing = sorted((int(hs[i]), hs[i + 1]) for i in range(0, len(hs), 2))
+        builders.append((res, roads, housing))
+    return builders, lines[5], lines[6]
+
+orig, olay, ogeese = parse("save_file.txt")
+new, nlay, ngeese = parse("a.sv")
+assert olay == nlay, "board layout changed"
+assert ogeese == ngeese == "7", (ogeese, ngeese)
+for i, (o, n) in enumerate(zip(orig, new)):
+    assert o[1] == n[1], ("roads lost for builder %d" % i, o[1], n[1])
+    assert o[2] == n[2], ("housing lost for builder %d" % i, o[2], n[2])
+    assert o[0] == n[0], ("resources lost for builder %d" % i, o[0], n[0])
+print("roads, housing levels, resources and geese all restored")
+PY

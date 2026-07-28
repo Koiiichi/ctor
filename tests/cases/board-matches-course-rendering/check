@@ -1,0 +1,24 @@
+
+set -e
+awk '/\|--/ || /^ *\|/ || /^ *[0-9]/ {print}' actual | head -41 > drawn
+python3 - <<'PY'
+def dedent(path):
+    rows = [r.rstrip() for r in open(path).read().split("\n") if r.strip()]
+    pad = min(len(r) - len(r.lstrip(" ")) for r in rows)
+    return [r[pad:] for r in rows]
+
+# 3.7 leaves it open whether the geese are drawn before a seven is rolled;
+# the reference does not draw them, this program does. The marker is blanked
+# out on both sides so the rest of the geometry can still be compared.
+want = [r.replace("GEESE", "     ").rstrip() for r in dedent("rectangular_layout.txt")]
+got = [r.replace("GEESE", "     ").rstrip() for r in dedent("drawn")]
+assert len(want) == len(got), ("row count %d vs %d" % (len(want), len(got)))
+bad = [(i, w, g) for i, (w, g) in enumerate(zip(want, got)) if w != g]
+for i, w, g in bad:
+    print("row %d\n  reference %r\n  drawn     %r" % (i, w, g))
+assert not bad, "%d rows differ from the reference rendering" % len(bad)
+print("board matches the course rendering (modulo a uniform left margin)")
+raw = dedent("drawn")
+assert any("GEESE" in r for r in raw), "geese marker missing from the drawing"
+print("geese drawn on the park tile, which 3.7 permits")
+PY

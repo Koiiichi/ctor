@@ -1,0 +1,4 @@
+
+test -f backup.sv || { echo "no backup.sv written on EOF"; exit 1; }
+echo "--- behaviour with a missing -board file ---"
+head -3 actual

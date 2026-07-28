@@ -1,0 +1,14 @@
+
+set -e
+test -f a.sv || { echo "no save written"; exit 1; }
+"$CTOR_BIN" -load a.sv <<'EOF' > /dev/null 2>&1
+roll
+3
+save b.sv
+EOF
+test -f b.sv || { echo "second save missing"; exit 1; }
+diff <(tail -n +2 a.sv) <(tail -n +2 b.sv) || {
+  echo "save/load/save changed the game state"; exit 1; }
+echo "a.sv curTurn=$(head -1 a.sv)  b.sv curTurn=$(head -1 b.sv)"
+test "$(head -1 a.sv)" = "1" || { echo "curTurn should name the next builder"; exit 1; }
+test "$(head -1 b.sv)" = "2" || { echo "curTurn should advance again"; exit 1; }

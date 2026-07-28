@@ -1,0 +1,5 @@
+
+set -e
+test "$(head -1 a.sv)" = "2" || {
+  echo "saved during Red's turn, expected curTurn 2, got $(head -1 a.sv)"; exit 1; }
+echo "curTurn saved as the next builder"

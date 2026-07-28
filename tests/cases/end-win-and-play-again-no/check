@@ -1,0 +1,9 @@
+
+set -e
+grep -q "Would you like to play again?$" actual || { echo "missing 4.4 prompt"; exit 1; }
+grep -q "Blue has 10 building points" actual || { echo "winner status not printed"; exit 1; }
+tail -1 actual | grep -q '^>' || { echo "expected the game to exit at the prompt"; exit 1; }
+grep -q "where do you want to build a basement" actual && {
+  echo "answering no should not start a new game"; exit 1; }
+echo "--- extra line printed on winning (not specified in 4.4) ---"
+grep -n "has won" actual || echo "(none)"

@@ -1,0 +1,6 @@
+
+set -e
+grep -q "Would you like to play again?$" actual || { echo "missing 4.4 prompt"; exit 1; }
+grep -q "Builder Blue, where do you want to build a basement?$" actual || {
+  echo "answering yes should restart from the beginning"; exit 1; }
+echo "yes restarts the game"

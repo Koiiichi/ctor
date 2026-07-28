@@ -1,0 +1,6 @@
+
+set -e
+n=$(grep -c "Choose a builder to steal from.$" actual)
+test "$n" = "3" || { echo "expected 3 steal prompts, saw $n"; exit 1; }
+echo "--- current refusal message at the steal prompt ---"
+sed -n '/Choose a builder to steal from.$/{n;p;}' actual | head -1

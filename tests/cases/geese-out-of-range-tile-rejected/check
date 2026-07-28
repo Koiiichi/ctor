@@ -1,0 +1,5 @@
+
+set -e
+n=$(grep -c "Choose where to place the GEESE.$" actual)
+test "$n" = "4" || { echo "expected 4 prompts, saw $n"; exit 1; }
+echo "out-of-range and non-numeric tiles re-prompt"

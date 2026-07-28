@@ -1,3 +1,24 @@
+UML MANUAL REVIEW:
+-- in player.cc members: std::vector<Settlement *> settlements present but in UML not, rest are present however? 
+-- in player.cc methods: void reduce(Material material, int amount);
+    void increase(Material material, int amount);
+    char getColour();
+
+    std::vector<int> giveMaterialAmount(); but in UML not, rest are present however? (rest means all other methods)
+
+-- in edge.cc members: int num present but in UML not, rest are present however? 
+-- in edge.cc methods: getters/setters are ignored in UML, which seems consistent to me. 
+
+-- in map.cc members:  Player *longestRoadHolder = nullptr;
+  int longestRoadLength = 0; present but in UML not, rest are present however? 
+
+-- in map.cc methods: getters/setters are ignored in UML, which seems consistent to me. 
+
+-- in vertice.cc members and methods seem consistent. 
+
+Like I performed this review above, can you continue doing it for other files and methods. I may have scrutinized incorrectly, maybe what we added in UML is intentional, please correct me if im wrong.
+
+
 UML CHANGES REQUIRED BY THE SPECIFICATION
 =========================================
 
@@ -253,4 +274,56 @@ not been edited, in keeping with the rest of this file.
         an addition to something never specified, exactly as recorded under
         change 8. The public surface is still only the constructor and play().
 
-On manual check: Interface on UML has BoardSource which I don't believe is a variable on interface definition. 
+DEFECTS FOUND BY THE TEST SUITE
+-------------------------------
+
+The suite in tests/ derives its expected output from the specification rather
+than from this program, and found five behaviour defects. All five were fixed
+inside existing function bodies. None of them changed a signature, so none of
+them is a numbered entry above and the diagram needs no further edit for them.
+They are listed here so a later reader can see they were considered.
+
+D1. The second opening basement paid no resources.
+    Spec: 1.1 Gameplay Overview, 4.1 Beginning of Game
+    "The player gets a resource for each resource tile that their second
+    residence touches." The opening built both basements free of charge and
+    paid nothing for either. The first basement correctly pays nothing.
+    Fix: Interface::grantSecondBasement, a new private helper called for the
+    last four placements. It walks Map's tiles, skips PARK (2.2 "The PARK tile
+    produces no resources") and calls Player::increase once per touching tile.
+    Interface's members are not on the diagram (change 8), so nothing to edit.
+
+D2. The saved <curTurn> named the current builder, not the next one.
+    Spec: 3.7 Saving a Game
+    "<curTurn> is the identity of the builder whose turn it will be when the
+    game starts ... it ends the current player's turn and marks the next
+    player as the one whose turn will start." saveGame wrote curTurn.
+    Fix: write (curTurn + 1) % 4. The live game is not advanced by a save.
+
+D3. With no -board argument the board was randomly generated.
+    Spec: 3.5.5 Tile Distribution
+    "By default, the file that is read is named layout.txt from the current
+    directory. (If the file isn't present, the player needs to use the
+    -random-board command-line argument.)" A random board was generated
+    instead, so a plain ./constructor ignored the layout.txt the course
+    supplies. Fix: Interface::setUpBoard reads layout.txt unless -board names
+    another file or -random-board is given without a layout.
+
+D4. ENERGY was drawn one column to the right of the reference rendering.
+    Spec: 2.2 Tiles, and the supplied rectangular_layout.txt
+    Material names were always placed at a fixed offset, which centres the
+    four and five letter names correctly but puts the six letter ENERGY one
+    column off. Fix: Map::display centres the name in the nine column cell,
+    biasing the extra space to the right, which reproduces all six names.
+
+D5. Interface::loadedGame was declared and never used.
+    Not a specification matter. Removed, matching the earlier removal of the
+    dead field on Player.
+
+Two further behaviours were left alone deliberately. The help text at the
+"during the turn" phase is the exact list from 4.3 again; the three bonus
+commands are appended to it only while the bonus switch is on, so with the
+switch off the output is byte for byte what 4.3 requires. And the geese are
+drawn on the board from the start, which 3.7 explicitly permits ("It is up to
+you whether they are initially displayed or not before a 7 is rolled") even
+though the supplied rectangular_layout.txt does not draw them.

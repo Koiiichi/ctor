@@ -1,0 +1,5 @@
+
+set -e
+test -f backup.sv || { echo "no backup.sv written on end of file"; exit 1; }
+head -1 backup.sv | grep -qE '^[0-3]$' || { echo "backup.sv is not a save file"; exit 1; }
+echo "backup.sv written"

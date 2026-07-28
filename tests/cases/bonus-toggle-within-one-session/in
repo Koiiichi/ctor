@@ -1,0 +1,10 @@
+roll
+2
+bank HEAT GLASS
+status
+enable-bonus
+status
+bank HEAT GLASS
+disable-bonus
+status
+bank HEAT GLASS

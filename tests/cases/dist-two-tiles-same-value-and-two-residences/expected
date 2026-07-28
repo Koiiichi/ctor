@@ -1,0 +1,21 @@
+Builder Blue, where do you want to build a basement?
+> Builder Red, where do you want to build a basement?
+> Builder Orange, where do you want to build a basement?
+> Builder Yellow, where do you want to build a basement?
+> Builder Yellow, where do you want to build a basement?
+> Builder Orange, where do you want to build a basement?
+> Builder Red, where do you want to build a basement?
+> Builder Blue, where do you want to build a basement?
+>
+Builder Blue's turn.
+Blue has 2 building points, 1 brick, 1 energy, 0 glass, 0 heat, and 0 WiFi.
+> Input a roll between 2 and 12:
+> Builder Blue gained:
+2 BRICK
+Builder Orange gained:
+1 BRICK
+> Blue has 2 building points, 3 brick, 1 energy, 0 glass, 0 heat, and 0 WiFi.
+Red has 2 building points, 0 brick, 2 energy, 0 glass, 0 heat, and 1 WiFi.
+Orange has 2 building points, 3 brick, 0 energy, 0 glass, 1 heat, and 0 WiFi.
+Yellow has 2 building points, 1 brick, 0 energy, 1 glass, 0 heat, and 1 WiFi.
+>

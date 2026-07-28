@@ -1,0 +1,13 @@
+
+set -e
+grep -q "Builder Blue loses 5 resources to the geese. They lose:$" actual || {
+  echo "builder with 10 resources did not lose half rounded down"; exit 1; }
+grep -q "Builder Red loses" actual && {
+  echo "builder with 9 resources should lose nothing"; exit 1; }
+grep -q "Builder Orange loses" actual && { echo "orange has nothing to lose"; exit 1; }
+total=$(sed -n '/Builder Blue loses/,/^Choose where to place the GEESE.$/p' actual \
+        | grep -E '^[0-9]+ (BRICK|ENERGY|GLASS|HEAT|WIFI)$' \
+        | awk '{s += $1} END {print s+0}')
+test "$total" = "5" || { echo "lost amounts sum to $total, expected 5"; exit 1; }
+grep -q "Choose where to place the GEESE.$" actual || { echo "missing geese prompt"; exit 1; }
+echo "10 loses 5, 9 loses 0, amounts sum to 5"

@@ -1,0 +1,14 @@
+
+set -e
+grep -q "Builder Blue can choose to steal from Red.$" actual || {
+  echo "candidate list wrong"; sed -n '/can choose/p' actual; exit 1; }
+grep -q "Choose a builder to steal from.$" actual || { echo "missing steal prompt"; exit 1; }
+grep -qE "Builder Blue steals (BRICK|ENERGY|GLASS|HEAT|WIFI) from builder Red.$" actual || {
+  echo "steal line wrong"; sed -n '/steals/p' actual; exit 1; }
+stolen=$(sed -n 's/.*Builder Blue steals \([A-Z]*\) from builder Red.$/\1/p' actual)
+case "$stolen" in
+  BRICK|ENERGY|GLASS|HEAT) ;;
+  WIFI) ;;
+  *) echo "stolen resource $stolen not one Red held"; exit 1 ;;
+esac
+echo "candidates: Red only; stole $stolen"

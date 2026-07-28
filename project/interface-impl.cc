@@ -14,6 +14,7 @@ using namespace std;
 
 static const char *COLOUR_NAMES[] = {"Blue", "Red", "Orange", "Yellow"};
 static const int BANK_TRADE_RATIO = 4;
+static const char *DEFAULT_LAYOUT = "layout.txt";
 
 static string materialName(Material mat) {
   switch (mat) {
@@ -91,14 +92,11 @@ Interface::Interface(int argc, char *argv[]) {
 }
 
 void Interface::setUpBoard() {
-  if (!boardFile.empty()) {
-    FileBoardSource src{boardFile};
-    map = make_unique<Map>(src);
-  } else if (useRandomBoard) {
+  if (boardFile.empty() && useRandomBoard) {
     RandomBoardSource src{static_cast<unsigned>(Dice::seed)};
     map = make_unique<Map>(src);
   } else {
-    RandomBoardSource src{static_cast<unsigned>(Dice::seed)};
+    FileBoardSource src{boardFile.empty() ? DEFAULT_LAYOUT : boardFile};
     map = make_unique<Map>(src);
   }
   for (int i = 0; i < map->numTiles(); ++i) {
@@ -136,10 +134,33 @@ void Interface::openingBasements() {
         continue;
       }
       players[p]->buildResidence(vertex, true);
+      if (slot >= 4) grantSecondBasement(p, vertex);
       break;
     }
   }
   cout << map->display() << endl;
+}
+
+void Interface::grantSecondBasement(int index, int vertex) {
+  for (int t = 0; t < map->numTiles(); ++t) {
+    TileInfo info = map->getTile(t).display();
+    if (info.mat == Material::Park) continue;
+    for (auto *v : map->getTile(t).getVertices()) {
+      if (v->getNumber() == vertex) players[index]->increase(info.mat, 1);
+    }
+  }
+}
+
+void Interface::printHelp() const {
+  cout << "Valid commands:" << endl << "board" << endl << "status" << endl
+       << "residences" << endl << "build-road <edge#>" << endl
+       << "build-res <housing#>" << endl << "improve <housing#>" << endl
+       << "trade <colour> <give> <take>" << endl << "next" << endl
+       << "save <file>" << endl << "help" << endl;
+  if (bonusEnabled) {
+    cout << "bank <give> <take>" << endl << "enable-bonus" << endl
+         << "disable-bonus" << endl;
+  }
 }
 
 void Interface::printStatus(int index) const {
@@ -289,13 +310,7 @@ bool Interface::beginningOfTurn() {
       }
       return true;
     } else if (cmd == "help") {
-      cout << "Valid commands:" << endl << "board" << endl << "status" << endl
-           << "residences" << endl << "build-road <edge#>" << endl
-           << "build-res <housing#>" << endl << "improve <housing#>" << endl
-           << "trade <colour> <give> <take>" << endl
-           << "bank <give> <take>" << endl << "enable-bonus" << endl
-           << "disable-bonus" << endl << "next" << endl
-           << "save <file>" << endl << "help" << endl;
+      printHelp();
     } else {
       cout << "Invalid command." << endl;
     }
@@ -316,13 +331,7 @@ bool Interface::duringTurn() {
     } else if (cmd == "next") {
       return true;
     } else if (cmd == "help") {
-      cout << "Valid commands:" << endl << "board" << endl << "status" << endl
-           << "residences" << endl << "build-road <edge#>" << endl
-           << "build-res <housing#>" << endl << "improve <housing#>" << endl
-           << "trade <colour> <give> <take>" << endl
-           << "bank <give> <take>" << endl << "enable-bonus" << endl
-           << "disable-bonus" << endl << "next" << endl
-           << "save <file>" << endl << "help" << endl;
+      printHelp();
     } else if (cmd == "save") {
       string file;
       if (!(cin >> file)) return false;
@@ -441,7 +450,7 @@ string Interface::boardLayout() const {
 void Interface::saveGame(const string &file) const {
   ofstream out{file};
   if (!out) return;
-  out << curTurn << "\n";
+  out << (curTurn + 1) % 4 << "\n";
   for (int i = 0; i < 4; ++i) {
     vector<int> res = players[i]->giveMaterialAmount();
     out << res[0] << " " << res[1] << " " << res[2] << " " << res[3] << " "

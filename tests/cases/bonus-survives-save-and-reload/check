@@ -1,0 +1,10 @@
+
+set -e
+"$CTOR_BIN" -enablebonus -load a.sv <<'EOF' > reloaded 2>&1
+roll
+2
+status
+EOF
+grep -q "Blue has 3 building points" reloaded || {
+  echo "bonus not recomputed after a reload"; grep "building points" reloaded; exit 1; }
+echo "bonus survives save and reload"

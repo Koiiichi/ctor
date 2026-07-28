@@ -11,7 +11,6 @@ export class Interface {
   std::unique_ptr<Map> map;
   std::vector<std::unique_ptr<Player>> players;
   int curTurn = 0;
-  bool loadedGame = false;
   std::string boardFile;
   bool useRandomBoard = false;
   std::string loadFile;
@@ -20,6 +19,7 @@ export class Interface {
   void setUpBoard();
   void setUpPlayers();
   void openingBasements();
+  void grantSecondBasement(int index, int vertex);
   bool beginningOfTurn();
   bool duringTurn();
   void handleSeven();
@@ -27,6 +27,7 @@ export class Interface {
   void saveGame(const std::string &file) const;
   bool loadGame(const std::string &file);
   std::string boardLayout() const;
+  void printHelp() const;
   void printStatus(int index) const;
   void printResidences(int index) const;
   int winner() const;

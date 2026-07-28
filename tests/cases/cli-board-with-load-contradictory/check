@@ -1,0 +1,4 @@
+
+set -e
+grep -q "^Blue has 7 building points" actual || { echo "expected the saved game to be restored"; exit 1; }
+echo "-load wins over -board: the saved game is restored"

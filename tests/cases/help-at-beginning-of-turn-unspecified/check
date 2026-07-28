@@ -1,0 +1,5 @@
+
+set -e
+echo "--- help at the beginning-of-turn phase currently prints ---"
+sed -n '/Valid commands:/,/^help$/p' actual
+grep -q "Valid commands:" actual || echo "(nothing)"

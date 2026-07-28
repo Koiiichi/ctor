@@ -295,7 +295,9 @@ string Map::display() const {
       int row = r * 4;
       int col = vc * 10;
       place(canvas, row + 2, col + 6, pad2(to_string(index)));
-      place(canvas, row + 3, col + 5, materialName(info.mat));
+      string name = materialName(info.mat);
+      place(canvas, row + 3, col + 3 + (9 - static_cast<int>(name.length())) / 2,
+            name);
       if (info.mat != Material::Park) {
         place(canvas, row + 4, col + 6, pad2(to_string(info.value)));
       }

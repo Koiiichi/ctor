@@ -1,0 +1,5 @@
+
+set -e
+grep -q "^Builder Blue, where do you want to build a basement?" actual || {
+  echo "expected a fresh game to start when the save file is missing"; exit 1; }
+echo "missing -load file falls through to a new game"

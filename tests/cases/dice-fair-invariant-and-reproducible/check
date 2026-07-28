@@ -1,0 +1,11 @@
+
+set -e
+"$CTOR_BIN" -seed 12345 -load g.sv < "$CASE_IN" > second 2>/dev/null
+sed -e 's/[[:space:]]*$//' second > second.n
+sed -e 's/[[:space:]]*$//' raw > first.n
+diff first.n second.n > /dev/null || {
+  echo "fair dice not reproducible under a fixed seed"; exit 1; }
+grep -q "Builder Blue's turn." actual || { echo "no turn started"; exit 1; }
+# A fair roll either distributes or does not; either way the turn advanced.
+grep -q "Builder Red's turn." actual || { echo "turn did not advance"; exit 1; }
+echo "fair dice reproducible under -seed"

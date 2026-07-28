@@ -1,0 +1,70 @@
+Constructor test suite
+======================
+
+Nothing here is part of the submission. No file in tests/ appears in
+project/order.txt or is touched by project/compile.
+
+Running
+-------
+
+    cd project && ./compile order.txt constructor
+    cd ../tests && ./run.sh                 # every case
+    ./run.sh geese                          # only cases whose name contains it
+    CTOR_BIN=/path/to/constructor ./run.sh  # a binary built elsewhere
+
+run.sh prints one PASS or FAIL line per case, the diff for each failure, and a
+count at the end. It exits non-zero if anything failed.
+
+How expectations were written
+-----------------------------
+
+Every expected file was written by hand from the specification text before the
+program was run, and the program was presumed wrong wherever the two
+disagreed. Five defects were found this way and are recorded at the end of
+project/uml_changes.txt. Where the specification defines no output, the case
+uses a check script that asserts only what the specification does require and
+prints the current behaviour so it can be reviewed.
+
+Case layout
+-----------
+
+Each directory under cases/ is one case:
+
+    cmd        command-line arguments, one line
+    in         standard input
+    expected   exact expected standard output (optional)
+    check      bash assertions, run in the work directory (optional)
+    needs      files to copy from data/, one name per line (optional)
+    keepboard  compare the board drawings too (optional)
+    <other>    copied into the work directory, e.g. a save file for this case
+
+Each case runs in a fresh temporary directory, so files a case writes
+(backup.sv, saves) cannot leak into another case.
+
+Two normalisations keep expected files hand-writable. Trailing whitespace is
+stripped from every line, so the "> " prompt of 4.5 reads as ">" when it is
+the last thing on a line. And the 41-line board drawings are removed unless
+the case asks for them, since only board-matches-course-rendering asserts the
+drawing itself; a prompt printed immediately before a drawing survives as a
+line of its own.
+
+Determinism
+-----------
+
+Cases that assert exact output use -seed and a fixed layout, and loaded dice
+so the roll is an input rather than a random draw. The paths that are
+irreducibly random are asserted as invariants instead: the multiset of
+resources and values on a generated board, the reproducibility of fair dice
+under a fixed seed, the number of resources lost to the geese, and that a
+stolen resource is one the victim held.
+
+data/
+-----
+
+    layout.txt              the layout supplied with the course files, which
+                            is also the board of Figure 3
+    rectangular_layout.txt  the rendering supplied with the course files
+    save_file.txt           the save file supplied with the course files
+    spec-figure3.layout     the layout printed in section 3.8
+    figure3-empty.sv        that layout with four empty builders, used to
+                            render the board with nothing built on it

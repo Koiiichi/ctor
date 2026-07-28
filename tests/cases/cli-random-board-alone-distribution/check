@@ -1,0 +1,21 @@
+
+set -e
+layout=$(sed -n '6p' out.sv)
+python3 - "$layout" <<'PY'
+import sys, collections
+f = sys.argv[1].split()
+codes = [int(f[i]) for i in range(0, len(f), 2)]
+vals = [int(f[i + 1]) for i in range(0, len(f), 2)]
+assert len(codes) == 19, codes
+res = collections.Counter(codes)
+want = {0: 4, 1: 4, 2: 4, 3: 3, 4: 3, 5: 1}
+assert res == collections.Counter(want), (res, want)
+park = codes.index(5)
+assert vals[park] == 7, vals[park]
+others = collections.Counter(v for i, v in enumerate(vals) if i != park)
+expect = collections.Counter({2: 1, 12: 1})
+for v in (3, 4, 5, 6, 8, 9, 10, 11):
+    expect[v] = 2
+assert others == expect, (others, expect)
+print("distribution ok")
+PY
