@@ -49,17 +49,12 @@ bool Player::buildRoad(int edge) {
 
 bool Player::trade(Material give, Material take, Player* other) {
   vector<int> otherMat = other->giveMaterialAmount();
-  // if player 1 has enough resources to trade
   if(((give == Material::Brick && numBricks >= 1) || (give == Material::Energy && numEnergy >= 1)
     || (give == Material::Glass && numGlass >= 1) || (give == Material::Heat && numHeat >= 1) 
     || (give == Material::Wifi && numWifi >= 1)) &&
-    // and player 2 has enough resources to trade
     ((take == Material::Brick && otherMat[0] >= 1) || (take == Material::Energy && otherMat[1] >= 1)
     || (take == Material::Glass && otherMat[2] >= 1) || (take == Material::Heat && otherMat[3] >= 1) 
     || (take == Material::Wifi && otherMat[4] >= 1))) {
-    // this ugly paragraph of a condition checks if the trade can legally happen
-    // it's not elegant, but this avoids checking and reducing for player 1, 
-    // then finding out player 2 doesn't have the resources and needing to refund player 1
     if (give == Material::Brick) {
       numBricks -= 1;
       other->increase(Material::Brick, 1);
@@ -150,7 +145,6 @@ int Player::getBuildingPoints(bool bonusEnabled) const {
   return total;
 }
 
-// reduce is only called within a check-then-act function
 void Player::reduce(Material material, int amount) {
   if(material == Material::Brick) {
     numBricks -= amount;
