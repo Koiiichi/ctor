@@ -7,6 +7,15 @@ def dedent(path):
     pad = min(len(r) - len(r.lstrip(" ")) for r in rows)
     return [r[pad:] for r in rows]
 
+# data/rectangular_layout.txt is byte-identical to the copy the course ships
+# in projects/constructor, and it carries a uniform six column left margin
+# that this program does not print. Nothing in the course materials settles
+# whether that margin belongs in the output: the project ships no expected
+# output files at all, and Figure 3 of the specification is the same drawing
+# centred on a page, so its absolute indent says nothing. The decision was to
+# print flush against the left edge. Both sides are de-indented here so the
+# relative geometry, which is what the specification does fix, is compared.
+
 # 3.7 leaves it open whether the geese are drawn before a seven is rolled;
 # the reference does not draw them, this program does. The marker is blanked
 # out on both sides so the rest of the geometry can still be compared.

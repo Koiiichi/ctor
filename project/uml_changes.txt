@@ -320,6 +320,15 @@ D5. Interface::loadedGame was declared and never used.
     Not a specification matter. Removed, matching the earlier removal of the
     dead field on Player.
 
+The left margin of the supplied rectangular_layout.txt was checked against
+the copy in the course's projects/constructor directory and is genuinely
+there: every row of that file sits six columns further right than this
+program draws it. It was left alone. The project ships no expected-output
+files, so nothing in the course materials fixes the absolute margin, and
+Figure 3 of the specification is the same drawing centred on a page. The
+relative geometry, which the specification does fix, matches the file exactly
+and is asserted by tests/cases/board-matches-course-rendering.
+
 Two further behaviours were left alone deliberately. The help text at the
 "during the turn" phase is the exact list from 4.3 again; the three bonus
 commands are appended to it only while the bonus switch is on, so with the
